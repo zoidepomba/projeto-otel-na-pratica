@@ -16,6 +16,8 @@ import (
 	"github.com/nats-io/nats.go/jetstream"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
+
 )
 
 type Payment struct {
@@ -75,11 +77,12 @@ func NewPayment(cfg *config.Payments) (*Payment, error) {
 }
 
 func (a *Payment) RegisterRoutes(mux *http.ServeMux) {
-	mux.HandleFunc("GET /payments", a.Handler.List)
-	mux.HandleFunc("POST /payments", a.Handler.Create)
-	mux.HandleFunc("GET /payments/{id}", a.Handler.Get)
-	mux.HandleFunc("PUT /payments/{id}", a.Handler.Update)
-	mux.HandleFunc("DELETE /payments/{id}", a.Handler.Delete)
+	mux.Handle("GET /payments", otelhttp.NewHandler(http.HandlerFunc(a.Handler.List), "GET /payments"))
+	mux.Handle("POST /payments", otelhttp.NewHandler(http.HandlerFunc(a.Handler.Create), "POST /payments"))
+	mux.Handle("GET /payments/{id}", otelhttp.NewHandler(http.HandlerFunc(a.Handler.Get), "GET /payments/{id}"))	
+	mux.Handle("PUT /payments/{id}", otelhttp.NewHandler(http.HandlerFunc(a.Handler.Update), "PUT /payments/{id}"))
+	mux.Handle("DELETE /payments/{id}", otelhttp.NewHandler(http.HandlerFunc(a.Handler.Delete), "DELETE /payments/{id}"))
+
 }
 
 func (a *Payment) Shutdown() error {

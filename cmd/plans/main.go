@@ -10,12 +10,14 @@ import (
 
 	"github.com/dosedetelemetria/projeto-otel-na-pratica/internal/app"
 	"github.com/dosedetelemetria/projeto-otel-na-pratica/internal/config"
+	"github.com/dosedetelemetria/projeto-otel-na-pratica/internal/telemetry"
 	"google.golang.org/grpc"
 )
 
 func main() {
 	configFlag := flag.String("config", "", "path to the config file")
 	flag.Parse()
+	telemetry.InitTelemetry()
 
 	c, _ := config.LoadConfig(*configFlag)
 

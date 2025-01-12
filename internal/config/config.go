@@ -6,7 +6,6 @@ package config
 import (
 	"fmt"
 	"os"
-
 	"gopkg.in/yaml.v3"
 )
 
@@ -60,6 +59,7 @@ type Users struct {
 func LoadConfig(filename string) (*Config, error) {
 	cfg := getDefaultConfig()
 
+	
 	if filename == "" {
 		return cfg, nil
 	}
