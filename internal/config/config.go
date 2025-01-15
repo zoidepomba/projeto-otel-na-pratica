@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"gopkg.in/yaml.v3"
+	"github.com/dosedetelemetria/projeto-otel-na-pratica/internal/pkg/log"
 )
 
 // Config represents the application configuration
@@ -57,15 +58,18 @@ type Users struct {
 
 // LoadConfig loads the configuration from a YAML file
 func LoadConfig(filename string) (*Config, error) {
+	logger := log.NewLogeer()
 	cfg := getDefaultConfig()
 
 	
 	if filename == "" {
+		logger.Error("config file not provided")
 		return cfg, nil
 	}
 
 	data, err := os.ReadFile(filename)
 	if err != nil {
+		logger.Error("failed to read config file: %s", err)
 		return nil, fmt.Errorf("failed to read config file: %w", err)
 	}
 
@@ -73,6 +77,7 @@ func LoadConfig(filename string) (*Config, error) {
 	data = []byte(os.ExpandEnv(string(data)))
 
 	if err := yaml.Unmarshal(data, &cfg); err != nil {
+		logger.Error("failed to unmarshal config: %s", err)
 		return nil, fmt.Errorf("failed to unmarshal config: %w", err)
 	}
 
