@@ -85,7 +85,8 @@ func LoadConfig(filename string) (*Config, error) {
 }
 
 func getDefaultConfig() *Config {
-	return &Config{
+	logger := log.NewLogeer()
+	config := &Config{
 		Payments: Payments{
 			SubscriptionsEndpoint: "http://localhost:8080/subscriptions",
 			SQLLite: SQLLite{
@@ -111,4 +112,6 @@ func getDefaultConfig() *Config {
 			},
 		},
 	}
+	logger.Info("Application is listening on HTTP port %s and GRPC port %s", config.Server.Endpoint.HTTP, config.Server.Endpoint.GRPC)
+	return config
 }
