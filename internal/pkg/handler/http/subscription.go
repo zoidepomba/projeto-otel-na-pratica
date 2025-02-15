@@ -9,6 +9,7 @@ import (
 
 	"github.com/dosedetelemetria/projeto-otel-na-pratica/internal/pkg/model"
 	"github.com/dosedetelemetria/projeto-otel-na-pratica/internal/pkg/store"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
 
 // SubscriptionHandler is an HTTP handler that performs CRUD operations for model.Subscription using a store.Subscription
@@ -55,7 +56,7 @@ func (h *SubscriptionHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 	// verify the user exists
 	{
-		user, _ := http.Get(h.usersEndpoint + "/" + subscription.UserID)
+		user, _ := otelhttp.Get(r.Context(), h.usersEndpoint + "/" + subscription.UserID)
 		if user.StatusCode != http.StatusOK {
 			http.Error(w, "User not found", http.StatusBadRequest)
 			return
@@ -65,7 +66,7 @@ func (h *SubscriptionHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 	// verify the plan exists
 	{
-		plan, _ := http.Get(h.plansEndpoint + "/" + subscription.PlanID)
+		plan, _ := otelhttp.Get(r.Context(), h.plansEndpoint + "/" + subscription.PlanID)
 		if plan.StatusCode != http.StatusOK {
 			http.Error(w, "Plan not found", http.StatusBadRequest)
 			return

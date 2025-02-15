@@ -12,6 +12,7 @@ import (
 	"github.com/dosedetelemetria/projeto-otel-na-pratica/internal/pkg/store"
 	"github.com/nats-io/nats.go"
 	"github.com/nats-io/nats.go/jetstream"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
 
 // PaymentHandler is an HTTP handler that performs CRUD operations for model.Payment using a store.Payment
@@ -54,7 +55,7 @@ func (h *PaymentHandler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check if subscription exists
-	sub, _ := http.Get(h.subscriptionsEndpoint + "/" + payment.SubscriptionID)
+	sub, _ := otelhttp.Get(r.Context(), h.subscriptionsEndpoint + "/" + payment.SubscriptionID)
 	if sub.StatusCode != http.StatusOK {
 		http.Error(w, "Subscription not found", http.StatusBadRequest)
 		return
