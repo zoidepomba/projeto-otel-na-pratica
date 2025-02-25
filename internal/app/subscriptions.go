@@ -4,6 +4,7 @@
 package app
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/dosedetelemetria/projeto-otel-na-pratica/internal/config"
@@ -11,6 +12,8 @@ import (
 	"github.com/dosedetelemetria/projeto-otel-na-pratica/internal/pkg/store"
 	"github.com/dosedetelemetria/projeto-otel-na-pratica/internal/pkg/store/memory"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
+	"go.opentelemetry.io/otel"
+
 )
 
 type Subscription struct {
@@ -18,7 +21,9 @@ type Subscription struct {
 	Store   store.Subscription
 }
 
-func NewSubscription(cfg *config.Subscriptions) *Subscription {
+func NewSubscription(ctx context.Context, cfg *config.Subscriptions) *Subscription {
+	ctx, span := otel.Tracer("subscription").Start(ctx, "NewSubscription")
+	defer span.End()
 	store := memory.NewSubscriptionStore()
 	return &Subscription{
 		Handler: subscriptionhttp.NewSubscriptionHandler(store, cfg.UsersEndpoint, cfg.PlansEndpoint),

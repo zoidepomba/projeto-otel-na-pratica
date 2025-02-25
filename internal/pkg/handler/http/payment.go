@@ -53,9 +53,14 @@ func (h *PaymentHandler) Create(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid request payload", http.StatusBadRequest)
 		return
 	}
-
+	
 	// Check if subscription exists
-	sub, _ := otelhttp.Get(r.Context(), h.subscriptionsEndpoint + "/" + payment.SubscriptionID)
+	sub, err := otelhttp.Get(r.Context(), h.subscriptionsEndpoint + "/" + payment.SubscriptionID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	defer sub.Body.Close()
 	if sub.StatusCode != http.StatusOK {
 		http.Error(w, "Subscription not found", http.StatusBadRequest)
 		return

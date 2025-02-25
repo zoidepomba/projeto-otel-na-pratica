@@ -78,14 +78,14 @@ func main() {
 	{
 		logger.Info("Starting the plan service")
 		span.AddEvent("starting the plan service")
-		a := app.NewPlan(&c.Plans)
+		a := app.NewPlan(ctx, &c.Plans)
 		a.RegisterRoutes(mux, grpcServer)
 	}
 
 	{
 		logger.Info("Starting the payment service")
 		span.AddEvent("starting the payment service")
-		a, err := app.NewPayment(&c.Payments)
+		a, err := app.NewPayment(ctx, &c.Payments)
 		if err != nil {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, err.Error())
@@ -105,7 +105,7 @@ func main() {
 	{
 		logger.Info("Starting the subscription service")
 		span.AddEvent("starting the subscription service")
-		a := app.NewSubscription(&c.Subscriptions)
+		a := app.NewSubscription(ctx, &c.Subscriptions)
 		a.RegisterRoutes(mux)
 	}
 
