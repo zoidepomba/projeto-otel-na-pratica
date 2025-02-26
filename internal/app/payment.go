@@ -97,7 +97,7 @@ func NewPayment(ctx context.Context, cfg *config.Payments) (*Payment, error) {
 	span.AddEvent("created jetstream")
 	stream, err := js.Stream(ctx, cfg.NATS.Stream)
 	if err != nil {
-		logger.Error("failed to create jetstream stream traceID", zap.Error(err), zap.String("trace_id", traceID))
+		logger.Error("failed to create jetstream stream traceID", zap.Error(err), zap.String("traceID", traceID))
 		span.SetStatus(codes.Error, err.Error())
 		span.RecordError(err)
 		span.AddEvent("failed to create jetstream stream", trace.WithAttributes(attribute.String("error", err.Error())))
